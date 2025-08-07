@@ -65,7 +65,7 @@ n8n-candidate-automation/
 
 1. **Clone this repo**  
    ```bash
-   git clone https://github.com/yourusername/n8n-candidate-automation.git
+   git clone https://github.com/KrMayank789/Artificial-Evaluation-and-Scheduling-System-for-Candidates.git
    ```
 
 2. **Import Workflow into n8n**
@@ -93,4 +93,4 @@ This system automated a previously manual hiring workflow, reducing screening ti
 ## 📬 Contact
 
 Have suggestions or want to collaborate?  
-Feel free to reach out via [LinkedIn](https://linkedin.com/in/your-profile) or raise an issue.
+Feel free to reach out via [LinkedIn](https://www.linkedin.com/in/mayankamrit/) or raise an issue.
