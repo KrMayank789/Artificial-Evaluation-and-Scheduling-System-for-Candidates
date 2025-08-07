@@ -1,0 +1,40 @@
+Artificial Evaluation and Scheduling System for Candidates
+
+This project automates the resume screening process using n8n and a Large Language Model (LLM) to efficiently process job applications.
+
+✨ How It Works
+A workflow is triggered by a new email containing a resume attachment.
+
+The resume text is extracted and sent to an AI model (e.g., Google Gemini, OpenAI).
+
+The AI analyzes the resume against a job role and returns a structured JSON object with key information and a score.
+
+The workflow checks for a dedicated Google Sheet.
+
+If the sheet exists, it appends the new candidate's data as a new row.
+
+If the sheet does not exist, it creates a new one with the correct headers and then appends the data.
+
+All extracted data, including the resume score and a brief justification, is saved in the Google Sheet for easy review.
+
+🛠️ Setup
+Credentials:
+
+Set up Google Sheets and Gmail credentials via OAuth 2.0.
+
+Obtain and configure API keys for your chosen AI model (e.g., OpenAI or Google Gemini).
+
+If needed, add credentials for a PDF-to-text API to handle resume file formats.
+
+Google Sheet:
+
+Create a blank Google Spreadsheet to serve as the master file. The workflow will handle creating the specific data sheet within it.
+
+Workflow:
+
+Build the n8n workflow using the following key nodes: Gmail Trigger, Google Sheets, HTTP Request (for parsing PDFs), an AI node, and an If node for conditional logic.
+
+Configure the If node's condition to check for the sheet's existence.
+
+🚀 Key Takeaway
+By activating this workflow, you can automate a significant portion of the initial hiring process, saving time and ensuring a consistent, data-driven approach to candidate screening.
