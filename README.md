@@ -67,7 +67,7 @@ Artificial-Evaluation-and-Scheduling-System-for-Candidates/
 2. **Import Workflow into n8n**
    - Open your n8n instance
    - Click `Import Workflow`
-   - Upload `automated-resume-screening.json`
+   - Upload `AI_ResumeValidator.json`
 
 3. **Connect Required Credentials**
    - Google Sheets, Calendar, and Gmail API
