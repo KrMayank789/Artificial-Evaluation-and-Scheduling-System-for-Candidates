@@ -1,0 +1,489 @@
+{
+  "name": "AI Resume validator",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Resume Submision",
+        "formDescription": "Submit you resume.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "What is Your name?",
+              "placeholder": "e.g. John Doe",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "placeholder": "abc@gmail.com",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Resume",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "acceptFileTypes": ".pdf",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -208,
+        -128
+      ],
+      "id": "065623b9-ad17-45ad-85ed-b9913f2552c3",
+      "name": "On form submission",
+      "webhookId": "ade0896e-4025-4972-a355-5eb4a3466f48"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "Resume",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -128
+      ],
+      "id": "73e3920b-a3fe-456f-a116-716a67338188",
+      "name": "Extract from File",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are an AI resume screening expert.\n\nGiven the resume text below, extract and return the following information in the below sections \n\n{\n  \"name\": \"Full name of the candidate\",\n  \"email\": \"Email address\",\n  \"skills\": [\"List\", \"of\", \"skills\"],\n  \"rating_out_of_10\": Numeric score from 0 to 10,\n  \"suggested_role\": \"Best-fit role title\",\n  \"ats_score\": Numeric score from 0 to 100\n}\nif the rating is equal to or greater than 8 add a label selected and if not rejected \nResume Text:\n{{ $json[\"text\"] }}\n"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        176,
+        -128
+      ],
+      "id": "44ab0cd7-9a45-4f60-a85f-7fb40aa241dd",
+      "name": "Message a model",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "hNwi1fVM1i5nTEXD",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "18mozggVWM6IeyOn1kb9LQHpPPrcHvwWqrWINAy9Cwq8",
+          "mode": "list",
+          "cachedResultName": "Candidate Information",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18mozggVWM6IeyOn1kb9LQHpPPrcHvwWqrWINAy9Cwq8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18mozggVWM6IeyOn1kb9LQHpPPrcHvwWqrWINAy9Cwq8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ JSON.parse($json.candidates[0].content.parts[0].text).email }}",
+            "Skills ": "={{ JSON.parse($json.candidates[0].content.parts[0].text).skills.join(\", \") }}",
+            " Rating ": "={{ JSON.parse($json.candidates[0].content.parts[0].text).rating_out_of_10 }}",
+            "Suggested Role": "={{ JSON.parse($json.candidates[0].content.parts[0].text).suggested_role}}\n",
+            "Name ": "={{ JSON.parse($json.candidates[0].content.parts[0].text).name }}",
+            "ATS Score": "={{ JSON.parse($json.candidates[0].content.parts[0].text).ats_score }}",
+            "Status": "={{ JSON.parse($json.candidates[0].content.parts[0].text).label }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name ",
+              "displayName": "Name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Skills ",
+              "displayName": "Skills ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": " Rating ",
+              "displayName": " Rating ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Suggested Role",
+              "displayName": "Suggested Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ATS Score",
+              "displayName": "ATS Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        784,
+        -256
+      ],
+      "id": "1d68b35c-6767-4f80-a227-a3c51f5653d1",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "iaoTEFFdmtpoXZEA",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "=Update on Your Application for {{ $json['Suggested Role'] }} at xyz Company",
+        "emailType": "text",
+        "message": "=Dear {{ $json['Name '] }},\n\nThank you for your interest in the {{ $json['Suggested Role'] }} position and for taking the time to interview with our team. We appreciate you sharing your experience and qualifications with us.  \n\nWe received a large number of applications for this role, and the selection process was highly competitive.While your qualifications are impressive, we have decided to move forward with other candidates whose profiles were a closer match for the specific requirements of this position at this time. \n\nThis was a difficult decision, and it does not reflect on your skills or potential. We encourage you to keep an eye on our careers page at [Link to Company Careers Page, if applicable] for future opportunities that may align with your background. \n\nWe wish you the best of luck in your job search and future endeavors.\n\nSincerely,  \nNAME \nHuman Resource\nxyz Company ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1200,
+        -240
+      ],
+      "id": "cda09a80-4a7f-4d71-9b0a-42fa4c15270a",
+      "name": "Send a message",
+      "webhookId": "194d1fa2-912b-490d-afc0-e179c3cb714b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "2HMW8kfQENMd45ws",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "amritmayank18@gmail.com",
+          "mode": "list",
+          "cachedResultName": "amritmayank18@gmail.com"
+        },
+        "start": "={{ DateTime.now().plus({ days: 2 }).set({ hour: 10, minute: 0, second: 0, millisecond: 0 }).toISO() }}",
+        "end": "={{ DateTime.now().plus({ days: 2 }).set({ hour: 12, minute: 0, second: 0, millisecond: 0 }).toISO() }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        1200,
+        -496
+      ],
+      "id": "d072ac21-bfcb-4ab1-bc25-adbe368c6760",
+      "name": "Create an event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "h6NpNxLCimcmWr23",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Checks if the candidate is selected or not').item.json.Email }}",
+        "subject": "=Interview Invitation:{{ $('Append row in sheet').item.json['Suggested Role'] }} at xyz Company  ",
+        "emailType": "text",
+        "message": "=Dear {{ $('Append row in sheet').item.json['Name '] }},\n\nThank you for your interest in the {{ $('Checks if the candidate is selected or not').item.json['Suggested Role'] }} position at xyz Company. We were very impressed with your application and would like to invite you for an interview to discuss your qualifications further.\n\nYour interview has been scheduled for:\n\nDate & Time: {{ $json.start.dateTime}}\n\n\nThe interview will take place remotely via [Video Conferencing Platform, e.g., Google Meet, Zoom]].\n\nLink to join to join will pe provided 2 hour prior the given time.\n\nTo help you prepare, please note the following instructions:\n\nThe interview is expected to last approximately [Duration, e.g., 45 minutes to 1 hour]..\n\nIf you have any questions prior to the interview, or if you need to reschedule, please reply to this email.\n\nWe look forward to speaking with you.\n\nSincerely,\n\nNAME\nHuman Resource \nxyz Company ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1472,
+        -496
+      ],
+      "id": "857de6a9-43ff-4b6d-ae94-746626b0dbe3",
+      "name": "Send a message1",
+      "webhookId": "d2bfc804-18f9-4805-bc0c-be62d915ed55",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "2HMW8kfQENMd45ws",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        784,
+        16
+      ],
+      "id": "ce4e0afe-6705-4ca7-a1ba-65e028e07a85",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "42395cc4-e919-47b3-9bed-7b1d11e5e817",
+              "leftValue": "={{ $json.candidates[0].content.parts[0].text.includes('N/A') }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "3a4ed72e-69ae-4aa9-8dfb-8ce500a2ffa2",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        528,
+        -128
+      ],
+      "id": "6dc18395-3dff-47fe-a48f-729663a0f5cb",
+      "name": "Checks if any null value "
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3df6805d-4889-4541-a1d8-bbbd0a894895",
+              "leftValue": "={{ $json[' Rating '] }}",
+              "rightValue": 8,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        992,
+        -368
+      ],
+      "id": "0847740f-deaa-45cf-8610-6acee7930c8d",
+      "name": "Checks if the candidate is selected or not"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Checks if any null value ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Checks if the candidate is selected or not",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        []
+      ]
+    },
+    "Checks if any null value ": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Checks if the candidate is selected or not": {
+      "main": [
+        [
+          {
+            "node": "Create an event",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "462d1265-0f87-4e6d-ac46-a1baee0d4fb9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bedb618e486894cb20037af58f7ca3ccf73b4a52ec1386ba8d4fc0d015872790"
+  },
+  "id": "CzP0EQocB1RheGfm",
+  "tags": []
+}
