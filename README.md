@@ -42,15 +42,11 @@ This workflow:
 ## 📂 Project Structure
 
 ```bash
-n8n-candidate-automation/
-│
-├── workflow/
-│   └── automated-resume-screening.json    # Exported n8n workflow
-│
-├── docs/
-│   └── workflow-visual.png                # Annotated screenshot of the workflow
-│
-└── README.md                              # This file
+Artificial-Evaluation-and-Scheduling-System-for-Candidates/
+├── document.txt
+├── README.md
+└── workflow-visual.png
+
 ```
 
 ---
